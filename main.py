@@ -4,17 +4,18 @@
 
 import sys
 import timeit
+from turtle import width
 from cv2 import ADAPTIVE_THRESH_GAUSSIAN_C, dilate
 import numpy as np
 import cv2
 from matplotlib import pyplot as plt
 sys.setrecursionlimit(3000)
 
-INPUT_IMAGE =  './img/2.bmp'
+INPUT_IMAGE =  './img/5.bmp'
 ALTURA_MIN = 5
 LARGURA_MIN = 5
 N_PIXELS_MIN = 5
-THRESHOLD = 0.95
+THRESHOLD = 0.80
 
 
 def calcula_verdice(img):    
@@ -45,7 +46,8 @@ def calcula_verdice(img):
     grau_verdice2 = np.empty ((rows, cols, 1), np.float32)
     for i in range(rows):
         for j in range(cols):
-            grau_verdice2[i, j] = (grau_verdice[i, j] - grau_verdice[1][1])/(grau_verdice.max() - grau_verdice[1][1])
+            # grau_verdice2[i, j] = (grau_verdice[i, j] - grau_verdice[1][1])/(grau_verdice.max() - grau_verdice[1][1])
+            grau_verdice2[i, j] = (grau_verdice[i, j] - THRESHOLD)/(grau_verdice.max() - THRESHOLD)
 
     cv2.imshow("imagem_normalizada",grau_verdice2)
 
@@ -70,12 +72,15 @@ def main ():
     img = cv2.imread (INPUT_IMAGE, cv2.IMREAD_COLOR)
     img_hsl = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
     img_float = img.astype(np.float32)/255 
+    width = round(img_float.shape[1]/4)
+    height = round(img_float.shape[1]/4)
+    img_float = cv2.resize(img_float, (width, height))
     cv2.imshow('Original', img)    
 
     # grau_verdice = img_float[:,:,1].reshape((img_float.shape[0],img_float.shape[1],1))
     # mask_green = np.where(grau_verdice < 0.2, img_float, 0)
     mask_green = calcula_verdice(img_float)
-    cv2.imshow('grau_verdice', mask_green)    
+    # cv2.imshow('grau_verdice', mask_green)    
 
 
     cv2.waitKey ()
