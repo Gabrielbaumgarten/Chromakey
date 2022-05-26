@@ -11,7 +11,7 @@ import cv2
 from matplotlib import pyplot as plt
 sys.setrecursionlimit(3000)
 
-INPUT_IMAGE =  './img/5.bmp'
+INPUT_IMAGE =  './img/8.bmp'
 ALTURA_MIN = 5
 LARGURA_MIN = 5
 N_PIXELS_MIN = 5
@@ -45,9 +45,15 @@ def calcula_verdice(img):
 
     cv2.imshow("MascaraNormalizada",grau_verdice2)
 
+    grau_verdice2 = cv2.erode(grau_verdice2, (3,3))
+    cv2.imshow("Erodido",grau_verdice2)
+
+    grau_verdice2 = cv2.GaussianBlur(grau_verdice2, (3,3), 0)
+    cv2.imshow("Blur",grau_verdice2)
+
     #Separa a tela verde da imagem
-    #teste = grau_verdice2 * img
-    teste = cv2.multiply(grau_verdice2, img)
+    teste = grau_verdice2 * img
+    #teste = cv2.multiply(grau_verdice2, img)
     #img [grau_verdice2 == 0] = 255
     #img = cv2.bitwise_and(img, img, mask=grau_verdice2)
     cv2.imshow("FrenteChroma",teste)
@@ -57,11 +63,12 @@ def calcula_verdice(img):
     fundo = cv2.resize(fundo, (grau_verdice2.shape[1],grau_verdice2.shape[0]))
     fundo = fundo.astype(np.float32)/255
     fundo = fundo * (1 - grau_verdice2)
-    cv2.imshow("FundoChroma",fundo)
+    cv2.imshow("FundoChroma",fundo)    
 
     #Junta fundo e frente
     chormaKey = fundo + teste
     cv2.imshow("Chroma",chormaKey)
+    cv2.imwrite("b.png", chormaKey*255)
 
 def main ():
 
